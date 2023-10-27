@@ -143,19 +143,17 @@ def breadthFirstSearch(problem: SearchProblem):
         if currentNode not in visited:
             visited.append(currentNode)  # Mark the current node as visite
 
-        # Check if the current node is a goal state.
-        if problem.isGoalState(currentNode):
-            return actions  # If it's a goal state, return the list of actions
+            # Check if the current node is a goal state.
+            if problem.isGoalState(currentNode):
+                return actions  # If it's a goal state, return the list of actions
 
-        # Explore the successors of the current node.
-        for nextNode, action, cost in problem.getSuccessors(currentNode):
-            newAction = actions + [
-                action
-            ]  # Extend the list of actions with the new action
+            # Explore the successors of the current node.
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                # Create a new list of actions by appending the current action.
+                newAction = actions + [action]
 
-            myQueue.push(
-                (nextNode, newAction)
-            )  # Add the successor to the queue for further exploration
+                # Push the next node and the new list of actions onto the queue for further exploration.
+                myQueue.push((nextNode, newAction))
 
     util.raiseNotDefined()
 
@@ -180,7 +178,7 @@ def uniformCostSearch(problem: SearchProblem):
     myQueue.push((start, [], 0), 0)
 
     # Main loop for uniform cost search
-    while not myQueue.isEmpty():
+    while myQueue:
         # Get the node with the lowest cost from the priority queue
         currentNode, actions, currentCost = myQueue.pop()
 
@@ -205,7 +203,6 @@ def uniformCostSearch(problem: SearchProblem):
 
                 # Add the next node with its new action and cost to the priority queue
                 myQueue.push((nextNode, newAction, newCost), priority)
-                print(myQueue.priority)
 
     util.raiseNotDefined()
 
@@ -244,21 +241,21 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
         if currentNode not in visited:
             visited.append(currentNode)
 
-        # Check if the current node is the goal state
-        if problem.isGoalState(currentNode):
-            return actions
+            # Check if the current node is the goal state
+            if problem.isGoalState(currentNode):
+                return actions
 
-        # Explore the successors of the current node
-        for nextNode, action, cost in problem.getSuccessors(currentNode):
-            # Create new action list and update the cost
-            newAction = actions + [action]
-            newCost = currentCost + cost
+            # Explore the successors of the current node
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                # Create new action list and update the cost
+                newAction = actions + [action]
+                newCost = currentCost + cost
 
-            # Calculate the estimated total cost using the heuristic function
-            heuristicCost = newCost + heuristic(nextNode, problem)
+                # Calculate the estimated total cost using the heuristic function
+                heuristicCost = newCost + heuristic(nextNode, problem)
 
-            # Push the next node onto the priority queue with its heuristic cost
-            myQueue.push((nextNode, newAction, newCost), heuristicCost)
+                # Push the next node onto the priority queue with its heuristic cost
+                myQueue.push((nextNode, newAction, newCost), heuristicCost)
 
     util.raiseNotDefined()
 
