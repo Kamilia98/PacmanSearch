@@ -40,6 +40,9 @@ from game import Actions
 import util
 import time
 import search
+import sys
+
+counter = 0
 
 
 class GoWestAgent(Agent):
@@ -403,6 +406,9 @@ class CornersProblem(search.SearchProblem):
         return len(actions)
 
 
+# Define a decorator function to count function calls
+
+
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -421,13 +427,21 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     if problem.isGoalState(state):
         return 0
-    maze_dis_lst = []
-    for pos in state[1]:
-        maze_dis_lst.append(
-            util.manhattanDistance(state[0], pos)
+    cornersLeftToVisit = list(state[1])
+
+    result = 0
+    curPoint = state[0]
+    while cornersLeftToVisit:
+        heuristic_cost, nextcorner = min(
+            [
+                (util.manhattanDistance(curPoint, corner), corner)
+                for corner in cornersLeftToVisit
+            ]
         )
-        # print(state[0])
-    return max(maze_dis_lst)
+        curPoint = nextcorner
+        result += heuristic_cost
+        cornersLeftToVisit.remove(nextcorner)
+    return result
 
 
 class AStarCornersAgent(SearchAgent):
@@ -535,14 +549,40 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+    foods = foodGrid.asList()
+
+    # reach goal state, no more food to eat
     if problem.isGoalState(state):
         return 0
-    maze_dis_lst = []
-    food_lst = foodGrid.asList()
-    for pos in food_lst:
-        maze_dis_lst.append(util.manhattanDistance(position, pos))
-    return max(maze_dis_lst)
+
+    unvisited_foods = foods
+
+    """
+    Find the min sum of distances between the unvisited foods.
+    If found a min manhattan distance between the next and current closest food,
+     - the next one will become the current one in the next iteration.
+     - remove the next one from unvisited foods
+    Repeat until all foods are eaten in the sum distance calculation.
+    """
+    result = 0
+    currentFood = position
+    while unvisited_foods:
+        heuristic_cost, next_closest_food = min(
+            [
+                (util.manhattanDistance(currentFood, unvisited_food), unvisited_food)
+                for unvisited_food in unvisited_foods
+            ]
+        )
+
+        currentFood = next_closest_food
+        result += heuristic_cost
+        unvisited_foods.remove(next_closest_food)
+
+    """
+    Heuristics is sum of distances between current state to closest food 
+    and closest food to the other foods
+    """
+    return result
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -579,7 +619,9 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        return search.ucs(problem)
+        return search.ucs(problem)  # 350
+        # return search.ucs(problem)     # 350
+        # return search.astar(problem)   # 350
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -620,24 +662,3 @@ class AnyFoodSearchProblem(PositionSearchProblem):
             return True
         else:
             return False
-
-
-def mazeDistance(point1, point2, gameState):
-    """
-    Returns the maze distance between any two points, using the search functions
-    you have already built. The gameState can be any game state -- Pacman's
-    position in that state is ignored.
-
-    Example usage: mazeDistance( (2,4), (5,6), gameState)
-
-    This might be a useful helper function for your ApproximateSearchAgent.
-    """
-    x1, y1 = point1
-    x2, y2 = point2
-    walls = gameState.getWalls()
-    assert not walls[x1][y1], "point1 is a wall: " + str(point1)
-    assert not walls[x2][y2], "point2 is a wall: " + str(point2)
-    prob = PositionSearchProblem(
-        gameState, start=point1, goal=point2, warn=False, visualize=False
-    )
-    return len(search.bfs(prob))

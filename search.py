@@ -83,26 +83,22 @@ def depthFirstSearch(problem: SearchProblem):
     start = problem.getStartState()
     if problem.isGoalState(start):
         return []
+
     myQueue = util.Stack()
     visited = []
     # setting my first path, its actions and cost
-    myQueue.push((start, [], 0))
+    myQueue.push((start, []))
 
     while myQueue:
-        currentNode, actions, currentCost = myQueue.pop()
+        currentNode, actions = myQueue.pop()
         if currentNode not in visited:
             visited.append(currentNode)
-        
 
             if problem.isGoalState(currentNode):
                 return actions
-
-            # print(currentNode)
-            # print(actions)
             for nextNode, action, cost in problem.getSuccessors(currentNode):
                 newAction = actions + [action]
-                newCost = currentCost + cost
-                myQueue.push((nextNode, newAction, newCost))
+                myQueue.push((nextNode, newAction))
 
     util.raiseNotDefined()
 
