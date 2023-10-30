@@ -81,7 +81,6 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     # Get the initial state from the problem
     start = problem.getStartState()
-    print(start)
 
     # Check if the initial state is already the goal state
     if problem.isGoalState(start):

@@ -328,17 +328,13 @@ class CornersProblem(search.SearchProblem):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
 
-        # Define the goal state with all four corners of the grid
-        self.goal = ((1, 1), (1, top), (right, 1), (right, top))
-        self.startingGameState = startingGameState
-
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
         "*** YOUR CODE HERE ***"
-        return (self.startingPosition, self.goal)
+        return (self.startingPosition, self.corners)
 
     def isGoalState(self, state):
         """
@@ -400,7 +396,7 @@ class CornersProblem(search.SearchProblem):
                 left_goal = tuple(left_goal)
 
                 # Add the successor state to the list of successors with an action and a cost of 1
-                successors.append(((pos, left_goal), action, 1))
+                successors.append((pos, action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
@@ -600,12 +596,15 @@ def foodHeuristic(state, problem):
                 for unvisited_food in unvisited_foods
             ]
         )
-        # Update the current food dot position to the next closest food dot
-        currentFood = next_closest_food
+
+        # Remove the visited food dot from the list of unvisited food dots
+        unvisited_foods.remove(currentFood)
+
         # Add the heuristic cost of reaching the next closest food dot to the result
         result += heuristic_cost
-        # Remove the visited food dot from the list of unvisited food dots
-        unvisited_foods.remove(next_closest_food)
+
+        # Update the current food dot position to the next closest food dot
+        currentFood = next_closest_food
 
     """
     Heuristics is sum of distances between current state to closest food 
@@ -649,7 +648,7 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # Use Uniform Cost Search (UCS) to find the path to the closest dot with cost 350
-        return search.ucs(problem)  # 350
+        return search.dfs(problem)  # 350
         # return search.ucs(problem)     # 350
         # return search.astar(problem)   # 350
 
