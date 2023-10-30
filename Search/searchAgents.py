@@ -328,6 +328,8 @@ class CornersProblem(search.SearchProblem):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
 
+        
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
@@ -396,7 +398,7 @@ class CornersProblem(search.SearchProblem):
                 left_goal = tuple(left_goal)
 
                 # Add the successor state to the list of successors with an action and a cost of 1
-                successors.append((pos, action, 1))
+                successors.append(((pos, left_goal), action, 1))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
