@@ -328,7 +328,7 @@ class CornersProblem(search.SearchProblem):
                 print("Warning: no food in corner " + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
 
-        
+        # Define the goal state with all four corners of the grid
 
     def getStartState(self):
         """
@@ -598,13 +598,10 @@ def foodHeuristic(state, problem):
                 for unvisited_food in unvisited_foods
             ]
         )
-
         # Remove the visited food dot from the list of unvisited food dots
-        unvisited_foods.remove(currentFood)
-
+        unvisited_foods.remove(next_closest_food)
         # Add the heuristic cost of reaching the next closest food dot to the result
         result += heuristic_cost
-
         # Update the current food dot position to the next closest food dot
         currentFood = next_closest_food
 
@@ -650,7 +647,7 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         # Use Uniform Cost Search (UCS) to find the path to the closest dot with cost 350
-        return search.dfs(problem)  # 350
+        return search.ucs(problem)  # 350
         # return search.ucs(problem)     # 350
         # return search.astar(problem)   # 350
 
